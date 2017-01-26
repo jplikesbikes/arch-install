@@ -50,8 +50,11 @@ mkdir /mnt/boot
 mount /dev/sda1 /mnt/boot
 
 #edit /etc/pacman.d/mirrorlist
-#add some script here to choose fastest mirrors
- 
+# Make a backup, enable all mirrors, choose the 6 fastest mirrors
+cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
+sed -i 's/^#Server/Server/' /etc/pacman.d/mirrorlist.backup
+rankmirrors -n 6 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
+
 # Install base system
 pacstrap -i /mnt base
 
