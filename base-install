@@ -46,6 +46,7 @@ mkdir /mnt/boot
 mount /dev/sda1 /mnt/boot
 
 #edit /etc/pacman.d/mirrorlist
+#add some script here to choose fastest mirrors
  
 # Install base system
 pacstrap -i /mnt base
