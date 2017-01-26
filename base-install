@@ -1,9 +1,22 @@
 # https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_entire_system#LVM_on_LUKS
 
 gdisk /dev/sda
-
 # 1 efi and boot - EF00 512mb
+# `n` for new
+# `enter` partition 1
+# `enter` for next free sector
+# `+512mb`
+# `ef00`
+
 # 2 dm-crypted partition with lvm in it (contains rootvol, swapvol and homevol) - 8E00 rest of disk
+# `n` for new
+# `enter` for partition 2
+# `enter` for next free sector
+# `enter` for rest of disk
+# `8e00` for lvm
+
+# save and write
+# `w` `enter `Y`
 
 #dm-crypt with lvm with / and /home
 cryptsetup luksFormat /dev/sda2
@@ -31,10 +44,6 @@ mount /dev/MyStorage/homevol /mnt/home
 mkfs.fat /dev/sda1
 mkdir /mnt/boot
 mount /dev/sda1 /mnt/boot
-
-#network configuration
-# plug into the wall the network interface in compiled into the kernel
-dhclient
 
 #edit /etc/pacman.d/mirrorlist
  
