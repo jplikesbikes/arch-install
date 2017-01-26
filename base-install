@@ -1,3 +1,7 @@
+# Update the system clock
+# Use timedatectl(1) to ensure the system clock is accurate:
+timedatectl set-ntp true
+
 # https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_entire_system#LVM_on_LUKS
 
 gdisk /dev/sda
@@ -102,3 +106,6 @@ vi /boot/loader/entries/arch.conf
 # options         cryptdevice=/dev/sda2:MyStorage root=/dev/mapper/MyStorage-rootvol
  
 reboot
+
+# Finish network setup with systemd-resolved
+# Finish INTEL MICROCODE Install the AUR package `systemd-boot-pacman-hook`
