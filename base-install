@@ -1,0 +1,94 @@
+# https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_entire_system#LVM_on_LUKS
+
+gdisk /dev/sda
+
+# 1 efi and boot - EF00 512mb
+# 2 dm-crypted partition with lvm in it (contains rootvol, swapvol and homevol) - 8E00 rest of disk
+
+#dm-crypt with lvm with / and /home
+cryptsetup luksFormat /dev/sda2
+cryptsetup open --type luks /dev/sda2 lvm
+
+pvcreate /dev/mapper/lvm
+vgcreate MyStorage /dev/mapper/lvm
+ 
+lvcreate -L 20GB MyStorage -n rootvol
+lvcreate -l +100%FREE MyStorage -n homevol
+
+# Chech the lvm setup
+lvdisplay
+ 
+mkfs.ext4 /dev/mapper/MyStorage-rootvol
+mkfs.ext4 /dev/mapper/MyStorage-homevol
+
+mount /dev/MyStorage/rootvol /mnt
+mkdir /mnt/home
+mount /dev/MyStorage/homevol /mnt/home
+
+
+#no swap for now can add later as a swapfile https://wiki.archlinux.org/index.php/Swap
+#Boot
+mkfs.fat /dev/sda1
+mkdir /mnt/boot
+mount /dev/sda1 /mnt/boot
+
+#network configuration
+# plug into the wall the network interface in compiled into the kernel
+dhclient
+
+#edit /etc/pacman.d/mirrorlist
+ 
+# Install base system
+pacstrap -i /mnt base
+
+genfstab -U /mnt >> /mnt/etc/fstab
+
+arch-chroot /mnt
+
+# Set the timezone
+ln -s /usr/share/zoneinfo/America/New_York /etc/localtime
+hwclock --systohc
+
+# Set the hostname
+echo myhostname > /etc/hostname
+
+vim /etc/hosts
+# add this line
+127.0.1.1	myhostname.localdomain	myhostname
+
+vim /etc/locale.gen 
+# uncomment en_US.UTF-8
+locale-gen
+
+# Networking
+systemctrl enable systemd-networkd.service
+systemctrl enable systemd-resolved.service
+networkctl list
+
+vim /etc/systemd/network/50-wired.network
+# [Match]
+# Name=/**name from networkctrl list**/
+# 
+# [Network]
+# DHCP=yes
+
+
+vi /etc/mkinitcpio.conf
+# update MODULES='... dm_mod ...'
+# update HOOKS='... keyboard encrypt lvm2 filesystem ...'
+
+mkinitcpio -p linux
+passwd
+
+#### INTEL MICROCODE ####
+#### Install the AUR package `systemd-boot-pacman-hook` to auto install new ucode updates into the boot partition
+pacman -Syu intel-ucode
+
+bootctl --path=/boot install
+vi /boot/loader/entries/arch.conf
+# title           Arch Linux
+# linux           /vmlinuz-linux
+# initrd          /initramfs-linux.img
+# options         cryptdevice=/dev/sda2:MyStorage root=/dev/mapper/MyStorage-rootvol
+ 
+reboot
