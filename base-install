@@ -28,13 +28,13 @@ cryptsetup open --type luks /dev/sda2 lvm
 
 pvcreate /dev/mapper/lvm
 vgcreate MyStorage /dev/mapper/lvm
- 
+
 lvcreate -L 20GB MyStorage -n rootvol
 lvcreate -l +100%FREE MyStorage -n homevol
 
 # Chech the lvm setup
 lvdisplay
- 
+
 mkfs.ext4 /dev/mapper/MyStorage-rootvol
 mkfs.ext4 /dev/mapper/MyStorage-homevol
 
@@ -73,8 +73,8 @@ vim /etc/hosts
 # add this line
 127.0.1.1	myhostname.localdomain	myhostname
 
-vim /etc/locale.gen 
 # uncomment en_US.UTF-8
+sed -i 's/^#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
 locale-gen
 
 # Networking
@@ -105,10 +105,10 @@ pacman -Syu intel-ucode
 
 bootctl --path=/boot install
 cat > /boot/loader/entries/arch.conf << EOF
-title  Arch Linux
-linux  /vmlinuz-linux
-initrd /initramfs-linux.img
-options cryptdevice=/dev/sda2:MyStorage root=/dev/mapper/MyStorage-rootvol
+title		Arch Linux
+linux		/vmlinuz-linux
+initrd		/initramfs-linux.img
+options	cryptdevice=/dev/sda2:MyStorage root=/dev/mapper/MyStorage-rootvol
 EOF
 
 # exit the chroot
