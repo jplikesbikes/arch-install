@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Update the system clock
 # Use timedatectl(1) to ensure the system clock is accurate:
 timedatectl set-ntp true
@@ -67,8 +69,10 @@ ln -s /usr/share/zoneinfo/America/New_York /etc/localtime
 hwclock --systohc
 
 # Set the hostname
-echo myhostname > /etc/hostname
-echo "127.0.1.1	myhostname.localdomain	myhostname" >> /etc/hosts
+echo "Enter Hostname"
+read HOSTNAME
+echo $HOSTNAME > /etc/hostname
+echo "127.0.1.1	$HOSTNAME.localdomain	$HOSTNAME" >> /etc/hosts
 
 # uncomment en_US.UTF-8
 sed -i 's/^#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
