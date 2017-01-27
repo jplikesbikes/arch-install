@@ -68,10 +68,7 @@ hwclock --systohc
 
 # Set the hostname
 echo myhostname > /etc/hostname
-
-vim /etc/hosts
-# add this line
-127.0.1.1	myhostname.localdomain	myhostname
+echo "127.0.1.1	myhostname.localdomain	myhostname" >> /etc/hosts
 
 # uncomment en_US.UTF-8
 sed -i 's/^#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
@@ -80,12 +77,11 @@ locale-gen
 # Networking
 systemctrl enable systemd-networkd.service
 systemctrl enable systemd-resolved.service
-networkctl list
+NETCTL=`networkctl list |grep -o "en\w*"`
 
-vim /etc/systemd/network/50-wired.network
 cat > /etc/systemd/network/50-wired.network << EOF
 [Match]
-Name=/**name from networkctrl list**/
+Name=$NETCTL
 
 [Network]
 DHCP=yes
