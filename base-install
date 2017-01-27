@@ -83,11 +83,13 @@ systemctrl enable systemd-resolved.service
 networkctl list
 
 vim /etc/systemd/network/50-wired.network
-# [Match]
-# Name=/**name from networkctrl list**/
-# 
-# [Network]
-# DHCP=yes
+cat > /etc/systemd/network/50-wired.network << EOF
+[Match]
+Name=/**name from networkctrl list**/
+
+[Network]
+DHCP=yes
+EOF
 
 
 vi /etc/mkinitcpio.conf
@@ -102,13 +104,17 @@ passwd
 pacman -Syu intel-ucode
 
 bootctl --path=/boot install
-vi /boot/loader/entries/arch.conf
-# title           Arch Linux
-# linux           /vmlinuz-linux
-# initrd          /initramfs-linux.img
-# options         cryptdevice=/dev/sda2:MyStorage root=/dev/mapper/MyStorage-rootvol
- 
-reboot
+cat > /boot/loader/entries/arch.conf << EOF
+title  Arch Linux
+linux  /vmlinuz-linux
+initrd /initramfs-linux.img
+options cryptdevice=/dev/sda2:MyStorage root=/dev/mapper/MyStorage-rootvol
+EOF
 
-# Finish network setup with systemd-resolved
-# Finish INTEL MICROCODE Install the AUR package `systemd-boot-pacman-hook`
+# exit the chroot
+exit
+
+# unmount partitions
+umount -R /mnt
+
+reboot
