@@ -81,7 +81,6 @@ locale-gen
 
 # Networking
 systemctrl enable systemd-networkd.service
-systemctrl enable systemd-resolved.service
 NETCTL=`networkctl list |grep -o "en\w*"`
 
 cat > /etc/systemd/network/50-wired.network << EOF
