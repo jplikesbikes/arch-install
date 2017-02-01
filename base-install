@@ -96,8 +96,8 @@ EOF
 # update MODULES='... dm_mod ...'
 # update HOOKS='... keyboard encrypt lvm2 filesystem ...'
 sed -i 's/^MODULES=""/MODULES="dm_mod"/' /etc/mkinitcpio.conf
-sed -i 's/keyboard//' /etc/mkinitcpio.conf
-sed -i 's/filesystem/keyboard encrypt lvm2 filesystem/' /etc/mkinitcpio.conf
+sed -i 's/\(^HOOKS=".*\)keyboard\(.*$\)/\1\2/' /etc/mkinitcpio.conf
+sed -i 's/\(^HOOKS=".*\)filesystems\(.*$\)/\1keyboard encrypt lvm2 filesystem\2/' /etc/mkinitcpio.conf
 
 mkinitcpio -p linux
 passwd
