@@ -8,14 +8,14 @@ timedatectl set-ntp true
 
 gdisk /dev/sda
 # 1 efi and boot - EF00 512mb
-# `n` for new
+# `n` `enter` for new
 # `enter` partition 1
 # `enter` for next free sector
 # `+512mb`
 # `ef00`
 
 # 2 dm-crypted partition with lvm in it (contains rootvol, swapvol and homevol) - 8E00 rest of disk
-# `n` for new
+# `n` `enter` for new
 # `enter` for partition 2
 # `enter` for next free sector
 # `enter` for rest of disk
