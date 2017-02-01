@@ -31,7 +31,9 @@ cryptsetup open --type luks /dev/sda2 lvm
 pvcreate /dev/mapper/lvm
 vgcreate MyStorage /dev/mapper/lvm
 
-lvcreate -L 20GB MyStorage -n rootvol
+echo "Enter rootvol size in GB"
+read ROOTVOLSIZE
+lvcreate -L $ROOTVOLSIZEGB MyStorage -n rootvol
 lvcreate -l +100%FREE MyStorage -n homevol
 
 # Chech the lvm setup
