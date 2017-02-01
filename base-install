@@ -66,6 +66,7 @@ genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt
 
 # Set the timezone
+rm /etc/localtime
 ln -s /usr/share/zoneinfo/America/New_York /etc/localtime
 hwclock --systohc
 
@@ -92,11 +93,11 @@ DHCP=yes
 EOF
 
 
-vi /etc/mkinitcpio.conf
-# @todo: write sed commands
 # update MODULES='... dm_mod ...'
 # update HOOKS='... keyboard encrypt lvm2 filesystem ...'
-# sed -i 's/^MODULES="/MODULES="dm_mod/' /etc/mkinitcpio.conf
+sed -i 's/^MODULES=""/MODULES="dm_mod"/' /etc/mkinitcpio.conf
+sed -i 's/keyboard//' /etc/mkinitcpio.conf
+sed -i 's/filesystem/keyboard encrypt lvm2 filesystem/' /etc/mkinitcpio.conf
 
 mkinitcpio -p linux
 passwd
@@ -121,3 +122,4 @@ exit
 umount -R /mnt
 
 reboot
+
