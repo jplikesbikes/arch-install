@@ -65,6 +65,8 @@ pacstrap -i /mnt base
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
+# This stops the script and jumps into the chroot
+# @todo break the script up here
 arch-chroot /mnt
 
 # Set the timezone
