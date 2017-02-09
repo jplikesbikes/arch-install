@@ -34,15 +34,23 @@ vgcreate MyStorage /dev/mapper/lvm
 echo "Enter rootvol size ex. 6GB"
 read ROOTVOLSIZE
 lvcreate -L $ROOTVOLSIZE MyStorage -n rootvol
+
+echo "Enter varvol size ex. 1GB"
+read VARVOLSIZE
+lvcreate -L $VARVOLSIZE MyStorage -n varvol
+
 lvcreate -l +100%FREE MyStorage -n homevol
 
 # Chech the lvm setup
 lvdisplay
 
 mkfs.ext4 /dev/mapper/MyStorage-rootvol
+mkfs.ext4 /dev/mapper/MyStorage-varvol
 mkfs.ext4 /dev/mapper/MyStorage-homevol
 
 mount /dev/MyStorage/rootvol /mnt
+mkdir /mnt/var
+mount /dev/MyStorage/varvol /mnt/var
 mkdir /mnt/home
 mount /dev/MyStorage/homevol /mnt/home
 
