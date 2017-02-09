@@ -66,8 +66,8 @@ pacstrap -i /mnt base
 genfstab -U /mnt >> /mnt/etc/fstab
 
 # We download a run the rest of the script in the chroot
-wget -O /mnt/ "https://raw.githubusercontent.com/jplikesbikes/arch-install/master/base-install-chroot"
-chmod +x base-install-chroot
+wget -O /mnt/base-install-chroot "https://raw.githubusercontent.com/jplikesbikes/arch-install/master/base-install-chroot"
+chmod +x /mnt/base-install-chroot
 arch-chroot /mnt ./base-install-chroot
 
 # unmount partitions
