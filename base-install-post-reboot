@@ -1,9 +1,52 @@
+# @todo: secure mount points change fstab
+# mount /var and /home nodev,nosuid
+# mount /boot nodev,nosuid,noexec
+
+# @todo: stop brute forcing passwords 10 trys then wait 10 minutes
+# edit /etc/pam.d/system-login
+# add: auth required pam_tally.so deny=9 unlock_time=600 onerr=succeed file=/var/log/faillog
+# comment out: # auth required pam_tally.so onerr=succeed file=/var/log/faillog
+
+# Update any packages and the cache
+pacman -Syu
+
+# create user
+echo "enter the username for the admin user"
+read USERNAME
+useradd -m -G wheel -s /bin/bash $USERNAME
+echo "wheel ALL=(ALL) ALL" | (EDITOR="tee -a" visudo)
+passwd $USERNAME
+
+# disable root login
+sudo passwd root -l
+
+# install ssh https://wiki.archlinux.org/index.php/Secure_Shell
+pacman -S openssh
+# @todo: edit /etc/ssh/sshd_config
+# @todo: disable root login
+# PermitRootLogin no
+# @todo: only those in wheel can login
+# AllowGroups wheel
+systemctl enable sshd.socket
+systemctl start sshd.socket
+
+
+# Finish network setup with avahi
+pacman -S avahi nss-mdns
+sudo vim /etc/avahi/avahi-daemon.conf
+# set use-ipv6 to yes
+sudo vim /etc/nsswitch.conf
+# hosts: files mdns_minimal [NOTFOUND=return] dns myhostname
+sudo systemctl enable avahi-daemon.service
+sudo systemctl start avahi-daemon.service
+
+
 # setup AUR
 #install base-devel tools for building aur packages
 sudo pacman -Syu --needed base-devel
 
-mkdir scratch
-cd scratch/
+# do all the work in /tmp so there's nothing to cleanup
+cd /tmp
 
 #install cower
 git clone https://aur.archlinux.org/cower.git
@@ -19,31 +62,6 @@ git clone https://aur.archlinux.org/pacaur.git
 cd pacaur/
 makepkg -sri
 
-
-# Finish network setup with avahi
-pacman -S avahi nss-mdns
-sudo vim /etc/avahi/avahi-daemon.conf
-# set use-ipv6 to yes
-sudo vim /etc/nsswitch.conf
-# hosts: files mdns_minimal [NOTFOUND=return] dns myhostname
-sudo systemctl enable avahi-daemon.service
-sudo systemctl start avahi-daemon.service
-
 # Finish INTEL MICROCODE Install the AUR package `systemd-boot-pacman-hook`
 pacaur -Syu systemd-boot-pacman-hook
 
-# create user
-useradd -m -G wheel -s /bin/bash username
-
-EDITOR=vim visudo
-# uncomment the line for %wheel
-
-# logout and back in as a normal user
-
-#disable root login
-sudo passwd root -l
-
-pacaur -S openssh
-vim /etc/ssh/sshd_config
-# PermitRootLogin no
-sudo systemctl enable sshd.socket
