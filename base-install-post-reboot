@@ -14,8 +14,15 @@ pacman -Syu
 echo "enter the username for the admin user"
 read USERNAME
 useradd -m -G wheel -s /bin/bash $USERNAME
+
+# only allow wheel to use sudo
 echo "wheel ALL=(ALL) ALL" | (EDITOR="tee -a" visudo)
 passwd $USERNAME
+
+# @todo: only allow wheel to su
+# Edit both /etc/pam.d/su and /etc/pam.d/su-l, then uncomment the line:
+# Uncomment the following line to require a user to be in the "wheel" group.
+# auth		required	pam_wheel.so use_uid
 
 # disable root login
 sudo passwd root -l
@@ -40,6 +47,7 @@ sudo vim /etc/nsswitch.conf
 sudo systemctl enable avahi-daemon.service
 sudo systemctl start avahi-daemon.service
 
+# @todo: firewall
 
 # setup AUR
 #install base-devel tools for building aur packages
