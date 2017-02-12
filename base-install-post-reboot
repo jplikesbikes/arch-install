@@ -20,6 +20,20 @@ ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
 # systemctl enable avahi-daemon.service
 # systemctl start avahi-daemon.service
 
+# Swap file
+# If you have lots of ram, only needed for hibernation
+# https://wiki.archlinux.org/index.php/swap#Swap_file
+# dd if=/dev/zero of=/swapfile bs=1M count=1024
+# chmod 600 /swapfile
+# mkswap /swapfile
+# swapon /swapfile
+# echo "/swapfile none swap defaults 0 0" >> /etc/fstab
+# I have lots of ram so set really low swappiness, it's only for hibernate
+# sysctl vm.swappiness=0
+# echo "vm.swappiness=0" > /etc/sysctl.d/99-sysctl.conf
+# @todo: finish hibernation setup
+# https://wiki.archlinux.org/index.php/Power_management/Suspend_and_hibernate
+
 # Secure mount points change fstab
 # https://wiki.archlinux.org/index.php/Security#Mount_options
 # nodev: Do not interpret character or block special devices on the file system.
