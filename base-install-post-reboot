@@ -95,10 +95,11 @@ cd /tmp
 #install cower
 git clone https://aur.archlinux.org/cower.git
 cd cower/
-vim ~/.gnupg/gpg.conf
+# @todo: add the gpg key so we can do the check instead of skipping it
+# vim ~/.gnupg/gpg.conf
 # change keyserver to mit key server
-gpg --recv-keys 1EB2638FF56C0C53
-makepkg -sri
+# gpg --recv-keys 1EB2638FF56C0C53
+makepkg -sri --skippgpcheck
 cd ..
 
 #install pacaur
