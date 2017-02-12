@@ -43,7 +43,7 @@ passwd $USERNAME
 # Setup sudo
 pacman -S --noconfirm sudo
 # only allow wheel to use sudo
-echo "wheel ALL=(ALL) ALL" | (EDITOR="tee -a" visudo)
+echo "%wheel ALL=(ALL) ALL" | (EDITOR="tee -a" visudo)
 
 
 # @todo: only allow wheel to su
