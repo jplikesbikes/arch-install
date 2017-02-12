@@ -1,5 +1,5 @@
 # Update any packages and the cache
-pacman -Syu
+pacman -Syu --noconfirm
 
 # Finish network setup 
 # https://wiki.archlinux.org/index.php/Systemd-networkd#Basic_DHCP_network
@@ -108,5 +108,5 @@ cd pacaur/
 makepkg -sri
 
 # Finish INTEL MICROCODE Install the AUR package `systemd-boot-pacman-hook`
-pacaur -Syu systemd-boot-pacman-hook
+pacaur -Syu --noconfirm systemd-boot-pacman-hook
 
