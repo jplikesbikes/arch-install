@@ -38,10 +38,9 @@ read USERNAME
 useradd -m -G wheel -s /bin/bash $USERNAME
 passwd $USERNAME
 
-# @todo: stop brute forcing passwords 10 trys then wait 10 minutes
-# edit /etc/pam.d/system-login
-# add: auth required pam_tally.so deny=9 unlock_time=600 onerr=succeed file=/var/log/faillog
-# comment out: # auth required pam_tally.so onerr=succeed file=/var/log/faillog
+# Stop brute forcing passwords, 10 trys then wait 10 minutes
+# https://wiki.archlinux.org/index.php/Security#Lockout_user_after_three_failed_login_attempts
+sed -i 's/\(^auth\s*required\s*pam_tally.so\s*\)\(onerr=succeed.*$\)/\1deny=9 unlock_time=600 \2/' /etc/pam.d/system-login
 
 # Setup sudo
 pacman -S --noconfirm sudo
