@@ -27,7 +27,7 @@ ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
 # noexec: Do not allow direct execution of any binaries on the mounted filesystem
 # mount /var and /home nodev,nosuid
 # mount /boot nodev,nosuid,noexec
-sed -i 's/\/home.*ext4.*rw//' /etc/mkinitcpio.conf
+# sed -i 's/\/home\s*ext4\s*rw//' /etc/fstab
 
 # create user
 echo "enter the username for the admin user"
@@ -41,7 +41,7 @@ passwd $USERNAME
 # comment out: # auth required pam_tally.so onerr=succeed file=/var/log/faillog
 
 # Setup sudo
-pacman -S sudo
+pacman -S --noconfirm sudo
 # only allow wheel to use sudo
 echo "wheel ALL=(ALL) ALL" | (EDITOR="tee -a" visudo)
 
@@ -55,7 +55,7 @@ echo "wheel ALL=(ALL) ALL" | (EDITOR="tee -a" visudo)
 sudo passwd root -l
 
 # install ssh https://wiki.archlinux.org/index.php/Secure_Shell
-pacman -S openssh
+pacman -S --noconfirm openssh
 # @todo: edit /etc/ssh/sshd_config
 # @todo: disable root login
 # PermitRootLogin no
@@ -69,7 +69,7 @@ systemctl start sshd.socket
 
 # setup AUR
 #install base-devel tools for building aur packages
-sudo pacman -Syu --needed base-devel
+pacman -Syu --noconfirm --needed base-devel
 
 # do all the work in /tmp so there's nothing to cleanup
 cd /tmp
