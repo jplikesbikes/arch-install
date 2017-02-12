@@ -1,23 +1,50 @@
+# Update any packages and the cache
+pacman -Syu
+
+# Finish network setup 
+# https://wiki.archlinux.org/index.php/Systemd-networkd#Basic_DHCP_network
+# https://www.freedesktop.org/software/systemd/man/systemd.network.html
+systemctl enable systemd-networkd.service
+systemctl start systemd-networkd.service
+systemctl enable systemd-resolved.service
+systemctl start systemd-resolved.service
+rm /etc/resolv.conf
+ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
+
+# @todo: Zeroconf
+# pacman -S avahi nss-mdns
+# vim /etc/avahi/avahi-daemon.conf
+# set use-ipv6 to yes
+# vim /etc/nsswitch.conf
+# hosts: files mdns_minimal [NOTFOUND=return] dns myhostname
+# systemctl enable avahi-daemon.service
+# systemctl start avahi-daemon.service
+
 # @todo: secure mount points change fstab
+# https://wiki.archlinux.org/index.php/Security#Mount_options
+# nodev: Do not interpret character or block special devices on the file system.
+# nosuid: Do not allow set-user-identifier or set-group-identifier bits to take effect.
+# noexec: Do not allow direct execution of any binaries on the mounted filesystem
 # mount /var and /home nodev,nosuid
 # mount /boot nodev,nosuid,noexec
+sed -i 's/\/home.*ext4.*rw//' /etc/mkinitcpio.conf
+
+# create user
+echo "enter the username for the admin user"
+read USERNAME
+useradd -m -G wheel -s /bin/bash $USERNAME
+passwd $USERNAME
 
 # @todo: stop brute forcing passwords 10 trys then wait 10 minutes
 # edit /etc/pam.d/system-login
 # add: auth required pam_tally.so deny=9 unlock_time=600 onerr=succeed file=/var/log/faillog
 # comment out: # auth required pam_tally.so onerr=succeed file=/var/log/faillog
 
-# Update any packages and the cache
-pacman -Syu
-
-# create user
-echo "enter the username for the admin user"
-read USERNAME
-useradd -m -G wheel -s /bin/bash $USERNAME
-
+# Setup sudo
+pacman -S sudo
 # only allow wheel to use sudo
 echo "wheel ALL=(ALL) ALL" | (EDITOR="tee -a" visudo)
-passwd $USERNAME
+
 
 # @todo: only allow wheel to su
 # Edit both /etc/pam.d/su and /etc/pam.d/su-l, then uncomment the line:
@@ -37,15 +64,6 @@ pacman -S openssh
 systemctl enable sshd.socket
 systemctl start sshd.socket
 
-
-# Finish network setup with avahi
-pacman -S avahi nss-mdns
-sudo vim /etc/avahi/avahi-daemon.conf
-# set use-ipv6 to yes
-sudo vim /etc/nsswitch.conf
-# hosts: files mdns_minimal [NOTFOUND=return] dns myhostname
-sudo systemctl enable avahi-daemon.service
-sudo systemctl start avahi-daemon.service
 
 # @todo: firewall
 
