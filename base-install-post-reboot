@@ -33,6 +33,7 @@ ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
 # echo "vm.swappiness=0" > /etc/sysctl.d/99-sysctl.conf
 # @todo: finish hibernation setup
 # https://wiki.archlinux.org/index.php/Power_management/Suspend_and_hibernate
+# https://wiki.archlinux.org/index.php/Power_management#Power_management_with_systemd
 
 # Secure mount points change fstab
 # https://wiki.archlinux.org/index.php/Security#Mount_options
