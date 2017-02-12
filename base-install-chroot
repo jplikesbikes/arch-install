@@ -39,7 +39,7 @@ passwd
 
 #### INTEL MICROCODE ####
 #### Install the AUR package `systemd-boot-pacman-hook` to auto install new ucode updates into the boot partition
-pacman -Syu intel-ucode
+pacman -Syu --noconfirm intel-ucode
 
 bootctl --path=/boot install
 cat > /boot/loader/entries/arch.conf << EOF
