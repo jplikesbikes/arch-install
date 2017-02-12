@@ -72,7 +72,7 @@ systemctl start sshd.socket
 
 # setup AUR
 #install base-devel tools for building aur packages
-pacman -Syu --noconfirm --needed base-devel
+pacman -S --noconfirm --needed base-devel
 
 # do all the work in /tmp so there's nothing to cleanup
 cd /tmp
