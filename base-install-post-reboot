@@ -47,25 +47,26 @@ pacman -S --noconfirm sudo
 # only allow wheel to use sudo
 echo "%wheel ALL=(ALL) ALL" | (EDITOR="tee -a" visudo)
 
-
-# @todo: only allow wheel to su
+# Only allow wheel to su
+# https://wiki.archlinux.org/index.php/Security#Allow_only_certain_users
 # Edit both /etc/pam.d/su and /etc/pam.d/su-l, then uncomment the line:
 # Uncomment the following line to require a user to be in the "wheel" group.
 # auth		required	pam_wheel.so use_uid
+sed -i 's/^#\(auth\s*required\s*pam_wheel.so\s*use_uid.*$\)/\1/' /etc/pam.d/su
+sed -i 's/^#\(auth\s*required\s*pam_wheel.so\s*use_uid.*$\)/\1/' /etc/pam.d/su-l
 
-# disable root login
-sudo passwd root -l
+# Disable root login
+passwd root -l
 
-# install ssh https://wiki.archlinux.org/index.php/Secure_Shell
+# Install and configure ssh
+# https://wiki.archlinux.org/index.php/Secure_Shell
 pacman -S --noconfirm openssh
-# @todo: edit /etc/ssh/sshd_config
-# @todo: disable root login
-# PermitRootLogin no
-# @todo: only those in wheel can login
-# AllowGroups wheel
+# Disable root login
+echo "PermitRootLogin no" >> /etc/ssh/sshd_config
+# Only those in wheel can login
+echo "AllowGroups wheel" >> /etc/ssh/sshd_config
 systemctl enable sshd.socket
 systemctl start sshd.socket
-
 
 # @todo: firewall
 
