@@ -51,6 +51,8 @@ mkfs.ext4 /dev/mapper/MyStorage-homevol
 mount /dev/MyStorage/rootvol /mnt
 mkdir /mnt/var
 mount /dev/MyStorage/varvol /mnt/var
+# Because /var is its on partition this is known but safe error on shutdown
+# https://bbs.archlinux.org/viewtopic.php?pid=1204644#p1204644
 mkdir /mnt/home
 mount /dev/MyStorage/homevol /mnt/home
 
