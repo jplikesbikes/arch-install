@@ -20,7 +20,7 @@ ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
 # systemctl enable avahi-daemon.service
 # systemctl start avahi-daemon.service
 
-# @todo: secure mount points change fstab
+# Secure mount points change fstab
 # https://wiki.archlinux.org/index.php/Security#Mount_options
 # nodev: Do not interpret character or block special devices on the file system.
 # nosuid: Do not allow set-user-identifier or set-group-identifier bits to take effect.
@@ -28,6 +28,9 @@ ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
 # mount /var and /home nodev,nosuid
 # mount /boot nodev,nosuid,noexec
 # sed -i 's/\/home\s*ext4\s*rw//' /etc/fstab
+sed -i 's/\/var\s*ext4\s*rw/\/var ext4  nodev,nosetuid,rw/` /etc/fstab
+sed -i 's/\/home\s*ext4\s*rw/\/home ext4  nodev,nosetuid,rw/` /etc/fstab
+sed -i 's/\/boot\s*vfat\s*rw/\/boot vfat  nodev,nosetuid,rw/` /etc/fstab
 
 # create user
 echo "enter the username for the admin user"
