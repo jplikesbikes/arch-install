@@ -1,6 +1,10 @@
 # Update any packages and the cache
 pacman -Syu --noconfirm
 
+# Start and enable systemd-timesyncd
+# https://wiki.archlinux.org/index.php/systemd-timesyncd
+timedatectl set-ntp true 
+
 # Finish network setup 
 # https://wiki.archlinux.org/index.php/Systemd-networkd#Basic_DHCP_network
 # https://www.freedesktop.org/software/systemd/man/systemd.network.html
