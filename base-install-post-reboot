@@ -24,6 +24,12 @@ ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
 # systemctl enable avahi-daemon.service
 # systemctl start avahi-daemon.service
 
+# @todo: https://wiki.archlinux.org/index.php/Solid_State_Drives
+
+# @todo: https://wiki.archlinux.org/index.php/Improving_performance
+
+# @todo: https://wiki.archlinux.org/index.php/System_maintenance
+
 # Swap file
 # If you have lots of ram, only needed for hibernation
 # https://wiki.archlinux.org/index.php/swap#Swap_file
@@ -87,7 +93,7 @@ echo "AllowGroups wheel" >> /etc/ssh/sshd_config
 systemctl enable sshd.socket
 systemctl start sshd.socket
 
-# @todo: firewall
+# @todo: https://wiki.archlinux.org/index.php/firewalls
 
 # setup AUR
 #install base-devel tools for building aur packages
