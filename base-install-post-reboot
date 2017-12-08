@@ -8,12 +8,12 @@ timedatectl set-ntp true
 # Finish network setup 
 # https://wiki.archlinux.org/index.php/Systemd-networkd#Basic_DHCP_network
 # https://www.freedesktop.org/software/systemd/man/systemd.network.html
-systemctl enable systemd-networkd.service
-systemctl start systemd-networkd.service
-systemctl enable systemd-resolved.service
-systemctl start systemd-resolved.service
-rm /etc/resolv.conf
-ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
+# systemctl enable systemd-networkd.service
+# systemctl start systemd-networkd.service
+# systemctl enable systemd-resolved.service
+# systemctl start systemd-resolved.service
+# rm /etc/resolv.conf
+# ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
 
 # @todo: Zeroconf
 # pacman -S avahi nss-mdns
