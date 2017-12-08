@@ -16,16 +16,20 @@ sed -i 's/^#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
 locale-gen
 
 # Networking
-systemctrl enable systemd-networkd.service
-NETCTL=`networkctl list |grep -o "en\w*"`
-
-cat > /etc/systemd/network/50-wired.network << EOF
-[Match]
-Name=$NETCTL
-
-[Network]
-DHCP=yes
-EOF
+# Using networkmanager
+pacman -S iw wpa_supplicant dialog networkmanager dhclient
+systemctl enable NetworkManager.service
+# Using Systemd
+# systemctrl enable systemd-networkd.service
+# NETCTL=`networkctl list |grep -o "en\w*"`
+#
+# cat > /etc/systemd/network/50-wired.network << EOF
+# [Match]
+# Name=$NETCTL
+#
+# [Network]
+# DHCP=yes
+# EOF
 
 
 # update MODULES='... dm_mod ...'
