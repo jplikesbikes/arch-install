@@ -102,6 +102,7 @@ pacman -S --noconfirm --needed base-devel git
 # do all the work in /tmp so there's nothing to cleanup
 cd /tmp
 
+# @todo: it probably crahsed here -- sign out + sign in as admin and re-do the following
 #install cower
 git clone https://aur.archlinux.org/cower.git
 cd cower/
