@@ -32,11 +32,11 @@ systemctl enable NetworkManager.service
 # EOF
 
 
-# update MODULES='... dm_mod ...'
-# update HOOKS='... keyboard encrypt lvm2 filesystem ...'
-sed -i 's/^MODULES=""/MODULES="dm_mod"/' /etc/mkinitcpio.conf
-sed -i 's/\(^HOOKS=".*\)keyboard\(.*$\)/\1\2/' /etc/mkinitcpio.conf
-sed -i 's/\(^HOOKS=".*\)filesystems\(.*$\)/\1keyboard encrypt lvm2 filesystems\2/' /etc/mkinitcpio.conf
+# update MODULES=() to MODULES=(dm_mod)
+# update HOOKS=(...) to HOOKS=(... keyboard encrypt lvm2 filesystem ...)
+sed -i 's/^MODULES=()/MODULES=(dm_mod)/' /etc/mkinitcpio.conf
+sed -i 's/^HOOKS=(\(.*\)keyboard\(.*\))/HOOKS=(\1\2)/' /etc/mkinitcpio.conf
+sed -i 's/^HOOKS=(\(.*\)filesystems\(.*\))/HOOKS=(\1keyboard encrypt lvm2 filesystems\2)/' /etc/mkinitcpio.conf
 
 mkinitcpio -p linux
 passwd
