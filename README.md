@@ -6,3 +6,8 @@ wget "https://raw.githubusercontent.com/jplikesbikes/arch-install/master/base-in
 chmod +x base-install
 ./base-install
 ```
+
+## Resizing a partition
+```
+lvresize --resizefs -L +10G MyStorage/varvol
+```
