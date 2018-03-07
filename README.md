@@ -11,3 +11,9 @@ chmod +x base-install
 ```
 lvresize --resizefs -L +10G MyStorage/varvol
 ```
+
+## Clean the systemd journals
+Keeps the last week of logs
+```
+journalctl --vacuum-time=7d
+```
