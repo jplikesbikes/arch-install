@@ -8,8 +8,22 @@ chmod +x base-install
 ```
 
 ## Resizing a partition
+From jack:
 ```
-lvresize --resizefs -L +10G MyStorage/varvol
+Here's the quick overview of how I resized `/var`. Feel free to pare it down or whatever
+
+Resize /var:
+Determine the volume group name: `sudo lvm vgdisplay`
+Determine the logical volume name: `sudo lvm lvdisplay`
+Since you can't resize the volumes while using them, we need to enable root: `sudo passwd -u root`
+Restart: `sudo shutdown -r now`
+Before logging in, open a shell (Ctrl + Alt + F2)
+Log in as root
+Resize the /var partition (using the volume group and logical volume names). My volume group is MyStorage and logical volume is varvol: `lvresize --resizefs -L +10G MyStorage/varvol`
+You may need to shrink another volume to make room for this: `lvresize --resizefs -L -10G MyStorage/homevol`
+Restart again: `shutdown -r now`
+Log in normally
+Remember to disable root (if you want): `sudo passwd -l root`
 ```
 
 ## Clean the systemd journals
