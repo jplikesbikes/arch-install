@@ -31,3 +31,9 @@ Keeps the last week of logs
 ```
 journalctl --vacuum-time=7d
 ```
+
+## Per user file limits
+add the following to `/etc/security/limits.conf`
+```
+* hard nofile 65536
+```
