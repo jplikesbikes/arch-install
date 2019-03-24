@@ -102,21 +102,11 @@ pacman -S --noconfirm --needed base-devel git
 # do all the work in /tmp so there's nothing to cleanup
 cd /tmp
 
-# @todo: it probably crahsed here -- sign out + sign in as admin and re-do the following
-#install cower
-git clone https://aur.archlinux.org/cower.git
-cd cower/
-# @todo: add the gpg key so we can do the check instead of skipping it
-# vim ~/.gnupg/gpg.conf
-# change keyserver to mit key server
-# gpg --recv-keys 1EB2638FF56C0C53
-makepkg -sri --skippgpcheck
+git clone https://aur.archlinux.org/pikaur.git
+chown -R $USERNAME:$USERNAME
+cd pikaur
+su - $USERNAME -c "makepkg -fsri"
 cd ..
-
-#install pacaur
-git clone https://aur.archlinux.org/pacaur.git
-cd pacaur/
-makepkg -sri
 
 # Finish INTEL MICROCODE Install the AUR package `systemd-boot-pacman-hook`
 pacaur -Syu --noconfirm systemd-boot-pacman-hook
