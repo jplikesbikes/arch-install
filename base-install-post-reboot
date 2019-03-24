@@ -31,6 +31,7 @@ timedatectl set-ntp true
 # @todo: https://wiki.archlinux.org/index.php/System_maintenance
 
 # Swap file
+# https://wiki.archlinux.org/index.php/swap#systemd-swap
 # If you have lots of ram, only needed for hibernation
 # https://wiki.archlinux.org/index.php/swap#Swap_file
 # dd if=/dev/zero of=/swapfile bs=1M count=1024
