@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Update the system clock
 # Use timedatectl(1) to ensure the system clock is accurate:
