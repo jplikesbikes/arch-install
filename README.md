@@ -38,6 +38,19 @@ add the following to `/etc/security/limits.conf`
 * hard nofile 65536
 ```
 
+## downgrade packages
+https://wiki.archlinux.org/index.php/Arch_Linux_Archive#How_to_restore_all_packages_to_a_specific_date
+```
+or by replacing your /etc/pacman.d/mirrorlist with the following content:
+##                                                                              
+## Arch Linux repository mirrorlist                                             
+## Generated on 2042-01-01                                                      
+##
+Server=https://archive.archlinux.org/repos/2014/03/30/$repo/os/$arch
+Then update the database and force downgrade:
+# pacman -Syyuu
+```
+
 ### Mods for make package
 
 Can speed it up by using all threads or disabling compression:
