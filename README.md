@@ -26,6 +26,9 @@ Log in normally
 Remember to disable root (if you want): `sudo passwd -l root`
 ```
 
+## decrypting a second harddrive on boot
+https://www.golinuxcloud.com/mount-luks-encrypted-disk-partition-linux/
+
 ## Clean the systemd journals
 Keeps the last week of logs
 ```
