@@ -61,3 +61,9 @@ https://gist.github.com/frandieguez/0b13bd58148679aa9955
 
 I noticed that compressing packages hangs the GNOME desktop. Instead of disabling it, I could just go all-in: https://wiki.archlinux.org/index.php/makepkg#Utilizing_multiple_cores_on_compression
 
+## Global Environment variables
+/etc/environment
+```
+_JAVA_AWT_WM_NONREPARENTING=1
+VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/intel_icd.x86_64.json
+```
