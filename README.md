@@ -67,3 +67,13 @@ I noticed that compressing packages hangs the GNOME desktop. Instead of disablin
 _JAVA_AWT_WM_NONREPARENTING=1
 VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/intel_icd.x86_64.json
 ```
+## Nvidia card 
++ set kernel parameter ibt=off
++ don't use nvidia for graphics only cuda
+/etc/modprobe.d/nvidia.conf
+```
+blacklist nvidia_drm
+blacklist nvidia_modeset
+blacklist nouveau
+```
++ install 'nvidia' for default kernel, 'nvidia-lts' for lts-kernel
