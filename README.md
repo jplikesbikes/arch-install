@@ -77,3 +77,7 @@ blacklist nvidia_modeset
 blacklist nouveau
 ```
 + install 'nvidia' for default kernel, 'nvidia-lts' for lts-kernel
+
+# package management
++ pacman-contrib provides pacdiff which finds all .pacnew and .pacsave
++ pacutils provides pacreport which can show missing packages from groups, unneeded packages, etc
