@@ -1,28 +1,3 @@
-# Update any packages and the cache
-pacman -Syu --noconfirm
-
-# Start and enable systemd-timesyncd
-# https://wiki.archlinux.org/index.php/systemd-timesyncd
-timedatectl set-ntp true 
-
-# Finish network setup 
-# https://wiki.archlinux.org/index.php/Systemd-networkd#Basic_DHCP_network
-# https://www.freedesktop.org/software/systemd/man/systemd.network.html
-# systemctl enable systemd-networkd.service
-# systemctl start systemd-networkd.service
-# systemctl enable systemd-resolved.service
-# systemctl start systemd-resolved.service
-# rm /etc/resolv.conf
-# ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
-
-# @todo: Zeroconf
-# pacman -S avahi nss-mdns
-# vim /etc/avahi/avahi-daemon.conf
-# set use-ipv6 to yes
-# vim /etc/nsswitch.conf
-# hosts: files mdns_minimal [NOTFOUND=return] dns myhostname
-# systemctl enable avahi-daemon.service
-# systemctl start avahi-daemon.service
 
 # @todo: https://wiki.archlinux.org/index.php/Solid_State_Drives
 
@@ -31,6 +6,7 @@ timedatectl set-ntp true
 # @todo: https://wiki.archlinux.org/index.php/System_maintenance
 
 # Swap file
+# https://github.com/systemd/zram-generator#systemd-zram-setupservice-generator-for-zram-devices
 # https://wiki.archlinux.org/index.php/swap#systemd-swap
 # If you have lots of ram, only needed for hibernation
 # https://wiki.archlinux.org/index.php/swap#Swap_file
@@ -46,40 +22,6 @@ timedatectl set-ntp true
 # https://wiki.archlinux.org/index.php/Power_management/Suspend_and_hibernate
 # https://wiki.archlinux.org/index.php/Power_management#Power_management_with_systemd
 
-# Secure mount points change fstab
-# https://wiki.archlinux.org/index.php/Security#Mount_options
-# nodev: Do not interpret character or block special devices on the file system.
-# nosuid: Do not allow set-user-identifier or set-group-identifier bits to take effect.
-# noexec: Do not allow direct execution of any binaries on the mounted filesystem
-# mount /var and /home nodev,nosuid
-# mount /boot nodev,nosuid,noexec
-# sed -i 's/\/home\s*ext4\s*rw//' /etc/fstab
-sed -i 's/\/var\s*ext4\s*rw/\/var ext4  nodev,nosuid,rw/' /etc/fstab
-sed -i 's/\/home\s*ext4\s*rw/\/home ext4  nodev,nosuid,rw/' /etc/fstab
-sed -i 's/\/boot\s*vfat\s*rw/\/boot vfat  nodev,nosuid,noexec,rw/' /etc/fstab
-
-# create user
-echo "enter the username for the admin user"
-read USERNAME
-useradd -m -G wheel -s /bin/bash $USERNAME
-passwd $USERNAME
-
-# Stop brute forcing passwords, 10 trys then wait 10 minutes
-# https://wiki.archlinux.org/index.php/Security#Lockout_user_after_three_failed_login_attempts
-sed -i 's/\(^auth\s*required\s*pam_tally.so\s*\)\(onerr=succeed.*$\)/\1deny=9 unlock_time=600 \2/' /etc/pam.d/system-login
-
-# Setup sudo
-pacman -S --noconfirm sudo
-# only allow wheel to use sudo
-echo "%wheel ALL=(ALL) ALL" | (EDITOR="tee -a" visudo)
-
-# Only allow wheel to su
-# https://wiki.archlinux.org/index.php/Security#Allow_only_certain_users
-# Edit both /etc/pam.d/su and /etc/pam.d/su-l, then uncomment the line:
-# Uncomment the following line to require a user to be in the "wheel" group.
-# auth		required	pam_wheel.so use_uid
-sed -i 's/^#\(auth\s*required\s*pam_wheel.so\s*use_uid.*$\)/\1/' /etc/pam.d/su
-sed -i 's/^#\(auth\s*required\s*pam_wheel.so\s*use_uid.*$\)/\1/' /etc/pam.d/su-l
 
 # Disable root login
 passwd root -l
@@ -96,9 +38,6 @@ systemctl start sshd.socket
 
 # @todo: https://wiki.archlinux.org/index.php/firewalls
 
-# setup AUR
-#install base-devel tools for building aur packages
-pacman -S --noconfirm --needed base-devel git
 
 # do all the work in /tmp so there's nothing to cleanup
 cd /tmp
@@ -107,8 +46,4 @@ git clone https://aur.archlinux.org/pikaur.git
 chown -R $USERNAME:$USERNAME
 cd pikaur
 su - $USERNAME -c "makepkg -fsri"
-cd ..
-
-# Finish INTEL MICROCODE Install the AUR package `systemd-boot-pacman-hook`
-pacaur -Syu --noconfirm systemd-boot-pacman-hook
-
+cd -

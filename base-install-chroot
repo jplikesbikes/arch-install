@@ -1,36 +1,89 @@
 #!/bin/bash
+set -xe
 
 # Set the timezone
-rm /etc/localtime
+rm -f /etc/localtime
 ln -s /usr/share/zoneinfo/America/New_York /etc/localtime
 hwclock --systohc
+
+# Start and enable systemd-timesyncd light wieght ntp client
+# https://wiki.archlinux.org/index.php/systemd-timesyncd
+systemctl enable systemd-timesyncd.service
+sed -i 's/#ntp=/ntp=0.pool.ntp.org 1.pool.ntp.org 2.pool.ntp.org 3.pool.ntp.org/' /etc/systemd/timesyncd.conf
+sed -i 's/#FallbackNTP/FallbackNTP/' /etc/systemd/timesyncd.conf
 
 # Set the hostname
 echo "Enter Hostname"
 read HOSTNAME
 echo $HOSTNAME > /etc/hostname
-echo "127.0.1.1	$HOSTNAME.localdomain	$HOSTNAME" >> /etc/hosts
+cat > /etc/hosts << EOF
+# Static table lookup for hostnames.
+# See hosts(5) for details.
+
+# Never route localhost over the network
+127.0.0.1        localhost
+::1              localhost
+127.0.1.1        $HOSTNAME.local $HOSTNAME
+EOF
 
 # uncomment en_US.UTF-8
 sed -i 's/^#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
 locale-gen
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
 
 # Networking
-# Using networkmanager
-pacman -S iw wpa_supplicant dialog networkmanager dhclient
-systemctl enable NetworkManager.service
-# Using Systemd
-# systemctrl enable systemd-networkd.service
-# NETCTL=`networkctl list |grep -o "en\w*"`
-#
-# cat > /etc/systemd/network/50-wired.network << EOF
-# [Match]
-# Name=$NETCTL
-#
-# [Network]
-# DHCP=yes
-# EOF
+# use systemd-networkd and systemd-resolved
+# https://wiki.archlinux.org/index.php/Systemd-networkd#Basic_DHCP_network
+# https://www.freedesktop.org/software/systemd/man/systemd.network.html
+systemctl enable systemd-networkd.service
+# RouteMetric gives priority to wired interfaces with immediate fallback to wireless
+# Zeroconf turned on with MulticastDNS=resolve and using systemd-resolved
+# defaults for wired networks
+cat > /etc/systemd/network/20-wired.network << EOF
+[Match]
+Name=en*
 
+[Network]
+DHCP=yes
+MulticastDNS=resolve
+
+[DHCPv4]
+RouteMetric=10
+
+[IPv6AcceptRA]
+RouteMetric=10
+EOF
+# defaults for wireless networks
+cat > /etc/systemd/network/20-wireless.network << EOF
+[Match]
+Name=wl*
+
+[Network]
+DHCP=yes
+IgnoreCarrierLoss=3s
+MulticastDNS=resolve
+
+[DHCPv4]
+RouteMetric=20
+
+[IPv6AcceptRA]
+RouteMetric=20
+EOF
+systemctl enable systemd-resolved.service
+# wifi use iwd
+systemctl enable iwd.service
+
+# Auto update MirrorList
+cat > /etc/xdg/reflector/reflector.conf << EOF
+--country US 
+--age 12 
+--latest 50 
+--sort rate 
+--protocol https 
+--save /etc/pacman.d/mirrorlist 
+-n 10
+EOF
+systemctl enable reflector.service
 
 # update MODULES=() to MODULES=(dm_mod)
 # update HOOKS=(...) to HOOKS=(... keyboard encrypt lvm2 filesystem ...)
@@ -38,21 +91,64 @@ sed -i 's/^MODULES=()/MODULES=(dm_mod)/' /etc/mkinitcpio.conf
 sed -i 's/^HOOKS=(\(.*\)keyboard\(.*\))/HOOKS=(\1\2)/' /etc/mkinitcpio.conf
 sed -i 's/^HOOKS=(\(.*\)filesystems\(.*\))/HOOKS=(\1keyboard encrypt lvm2 filesystems\2)/' /etc/mkinitcpio.conf
 
-mkinitcpio -p linux
-passwd
+mkinitcpio -P
 
-#### INTEL MICROCODE ####
-#### Install the AUR package `systemd-boot-pacman-hook` to auto install new ucode updates into the boot partition
-pacman -Syu --noconfirm intel-ucode
+# #### MICROCODE ####
+# #### Enable and start the `systemd-boot-update.service`` to auto install new ucode updates into the boot partition
+# # https://www.reddit.com/r/archlinux/comments/sdxnnv/til_no_more_pacman_hook_to_update_systemdboot/
+systemctl enable systemd-boot-update.service
+
+echo "Which microcode? intel-ucode or amd-ucode"
+read UCODE
+pacman -S --noconfirm $UCODE
 
 bootctl --path=/boot install
 cat > /boot/loader/entries/arch.conf << EOF
 title		Arch Linux
 linux		/vmlinuz-linux
-initrd		/intel-ucode.img
+initrd		/$UCODE.img
 initrd		/initramfs-linux.img
 options	cryptdevice=/dev/sda2:MyStorage:allow-discards root=/dev/mapper/MyStorage-rootvol
 EOF
+
+# Secure mount points change fstab
+# https://wiki.archlinux.org/index.php/Security#Mount_options
+# nodev: Do not interpret character or block special devices on the file system.
+# nosuid: Do not allow set-user-identifier or set-group-identifier bits to take effect.
+# noexec: Do not allow direct execution of any binaries on the mounted filesystem
+# mount /var and /home nodev,nosuid
+# mount /boot nodev,nosuid,noexec
+# sed -i 's/\/home\s*ext4\s*rw//' /etc/fstab
+sed -i 's/\/var\s*ext4\s*rw/\/var ext4  nodev,nosuid,rw/' /etc/fstab
+sed -i 's/\/home\s*ext4\s*rw/\/home ext4  nodev,nosuid,rw/' /etc/fstab
+sed -i 's/\/boot\s*vfat\s*rw/\/boot vfat  nodev,nosuid,noexec,rw/' /etc/fstab
+
+# create user
+echo "enter the username for the admin user"
+read USERNAME
+useradd -m -G wheel -s /bin/bash $USERNAME
+passwd $USERNAME
+
+echo "Change root password"
+passwd
+
+# Stop brute forcing passwords, 10 trys then wait 10 minutes
+# https://wiki.archlinux.org/index.php/Security#Lockout_user_after_three_failed_login_attempts
+sed -i 's/\(^auth\s*required\s*pam_tally.so\s*\)\(onerr=succeed.*$\)/\1deny=9 unlock_time=600 \2/' /etc/pam.d/system-login
+
+# Setup sudo
+# only allow wheel to use sudo
+echo "%wheel ALL=(ALL) ALL" | (EDITOR="tee -a" visudo)
+
+
+# Only allow wheel to su
+# https://wiki.archlinux.org/index.php/Security#Allow_only_certain_users
+# Edit both /etc/pam.d/su and /etc/pam.d/su-l, then uncomment the line:
+# Uncomment the following line to require a user to be in the "wheel" group.
+# auth		required	pam_wheel.so use_uid
+sed -i 's/^#\(auth\s*required\s*pam_wheel.so\s*use_uid.*$\)/\1/' /etc/pam.d/su
+sed -i 's/^#\(auth\s*required\s*pam_wheel.so\s*use_uid.*$\)/\1/' /etc/pam.d/su-l
+
 
 # exit the chroot
 exit
