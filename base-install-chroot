@@ -149,6 +149,14 @@ echo "%wheel ALL=(ALL) ALL" | (EDITOR="tee -a" visudo)
 sed -i 's/^#\(auth\s*required\s*pam_wheel.so\s*use_uid.*$\)/\1/' /etc/pam.d/su
 sed -i 's/^#\(auth\s*required\s*pam_wheel.so\s*use_uid.*$\)/\1/' /etc/pam.d/su-l
 
+# https://wiki.archlinux.org/title/Getty#Have_boot_messages_stay_on_tty1
+cat > /etc/systemd/system/getty@tty1.service.d/noclear.conf << EOF
+[Service]
+TTYVTDisallocate=no
+EOF
+
+# https://wiki.archlinux.org/title/Solid_state_drive#TRIM
+systemctl enable fstrim.timer
 
 # exit the chroot
 exit
