@@ -81,3 +81,9 @@ blacklist nouveau
 # package management
 + pacman-contrib provides pacdiff which finds all .pacnew and .pacsave
 + pacutils provides pacreport which can show missing packages from groups, unneeded packages, etc
+
+# Blockers for new install
++ what size swapfile? https://wiki.archlinux.org/title/Power_management/Suspend_and_hibernate#Hibernation (https://github.com/Tookmund/Swapspace)
++ what filesystem, still ext4?
++ do I still want to use lvm
++ luks vs hardware encrypted ssd

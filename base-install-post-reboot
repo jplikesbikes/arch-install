@@ -44,3 +44,6 @@ chown -R $USERNAME:$USERNAME
 cd pikaur
 su - $USERNAME -c "makepkg -fsri"
 cd -
+
+# fonts
+# https://wiki.archlinux.org/title/Font_configuration
