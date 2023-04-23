@@ -1,0 +1,61 @@
+#!/bin/bash
+set -xe
+
+# https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_entire_system#LVM_on_LUKS
+
+gdisk /dev/sda
+# 1 efi and boot - EF00 512mb
+# `n` `enter` for new
+# `enter` partition 1
+# `enter` for next free sector
+# `+512mb`
+# `ef00`
+
+# 2 dm-crypted partition with lvm in it (contains rootvol, swapvol and homevol) - 8E00 rest of disk
+# `n` `enter` for new
+# `enter` for partition 2
+# `enter` for next free sector
+# `enter` for rest of disk
+# `8e00` for lvm
+
+# save and write
+# `w` `enter `Y`
+
+#dm-crypt with lvm with / and /home
+cryptsetup luksFormat /dev/sda2
+cryptsetup open --type luks /dev/sda2 lvm
+
+pvcreate /dev/mapper/lvm
+vgcreate MyStorage /dev/mapper/lvm
+
+echo "Enter rootvol size ex. 6GB"
+read ROOTVOLSIZE
+lvcreate -L $ROOTVOLSIZE MyStorage -n rootvol
+
+echo "Enter varvol size ex. 1GB"
+read VARVOLSIZE
+lvcreate -L $VARVOLSIZE MyStorage -n varvol
+
+lvcreate -l +100%FREE MyStorage -n homevol
+
+# Chech the lvm setup
+lvdisplay
+
+mkfs.ext4 /dev/mapper/MyStorage-rootvol
+mkfs.ext4 /dev/mapper/MyStorage-varvol
+mkfs.ext4 /dev/mapper/MyStorage-homevol
+
+mount /dev/MyStorage/rootvol /mnt
+mkdir /mnt/var
+mount /dev/MyStorage/varvol /mnt/var
+# Because /var is its on partition this is known but safe error on shutdown
+# https://bbs.archlinux.org/viewtopic.php?pid=1204644#p1204644
+mkdir /mnt/home
+mount /dev/MyStorage/homevol /mnt/home
+
+
+# no swap for now can add later as a swapfile https://wiki.archlinux.org/index.php/Swap
+# Boot
+mkfs.fat /dev/sda1
+mkdir /mnt/boot
+mount /dev/sda1 /mnt/boot
