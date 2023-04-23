@@ -26,6 +26,7 @@ ln -sf /run/systemd/resolve/stub-resolv.conf /mnt/etc/resolv.conf
 
 cp base-install-chroot /mnt/
 arch-chroot /mnt ./base-install-chroot
+rm /mnt/base-install-chroot
 
 # unmount partitions
 umount -R /mnt

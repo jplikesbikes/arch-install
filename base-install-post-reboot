@@ -27,21 +27,20 @@
 passwd root -l
 
 # Install and configure ssh
-# https://wiki.archlinux.org/index.php/Secure_Shell
-pacman -S --noconfirm openssh
-# Disable root login
-echo "PermitRootLogin no" >> /etc/ssh/sshd_config
-# Only those in wheel can login
-echo "AllowGroups wheel" >> /etc/ssh/sshd_config
-systemctl enable sshd.socket
-systemctl start sshd.socket
+# # https://wiki.archlinux.org/index.php/Secure_Shell
+# pacman -S --noconfirm openssh
+# # Disable root login
+# echo "PermitRootLogin no" >> /etc/ssh/sshd_config
+# # Only those in wheel can login
+# echo "AllowGroups wheel" >> /etc/ssh/sshd_config
+# systemctl enable sshd.socket
+# systemctl start sshd.socket
 
 # @todo: https://wiki.archlinux.org/index.php/firewalls
 
 
 # do all the work in /tmp so there's nothing to cleanup
 cd /tmp
-
 git clone https://aur.archlinux.org/pikaur.git
 chown -R $USERNAME:$USERNAME
 cd pikaur
