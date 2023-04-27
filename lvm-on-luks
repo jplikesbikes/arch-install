@@ -1,6 +1,8 @@
 #!/bin/bash
 set -xe
 
+# use ext4 for the system and home and xfs for the data drive
+
 # https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_entire_system#LVM_on_LUKS
 
 gdisk /dev/sda
