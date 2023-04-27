@@ -104,6 +104,15 @@ systemctl enable reflector.service
 # enable apparmor
 systemctl enable apparmor.service
 
+# swap 
+# https://haydenjames.io/linux-performance-almost-always-add-swap-space/
+# in /etc/sysctl.conf set
+# vm.swappiness=10
+# vm.vfs_cache_pressure=50
+# https://haydenjames.io/linux-performance-almost-always-add-swap-part2-zram/
+# probably use a small 4gb swap file and zram,
+# check about tuning swappiness and vfs_cache_pressure with the above
+
 # update MODULES=() to MODULES=(dm_mod)
 # update HOOKS=(...) to HOOKS=(... keyboard encrypt lvm2 filesystem ...)
 sed -i 's/^MODULES=()/MODULES=(dm_mod)/' /etc/mkinitcpio.conf
