@@ -11,7 +11,7 @@ cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
 reflector --country US --age 12 --latest 50 --sort rate --protocol https --save /etc/pacman.d/mirrorlist -n 6
 
 # Install base system
-pacstrap -K /mnt base linux linux-firmware iwd lvm2 reflector sudo base-devel git
+pacstrap -K /mnt base linux linux-firmware iwd lvm2 reflector sudo base-devel git apparmor
 
 genfstab -U /mnt >> /mnt/etc/fstab
 

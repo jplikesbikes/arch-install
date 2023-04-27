@@ -101,6 +101,9 @@ cat > /etc/xdg/reflector/reflector.conf << EOF
 EOF
 systemctl enable reflector.service
 
+# enable apparmor
+systemctl enable apparmor.service
+
 # update MODULES=() to MODULES=(dm_mod)
 # update HOOKS=(...) to HOOKS=(... keyboard encrypt lvm2 filesystem ...)
 sed -i 's/^MODULES=()/MODULES=(dm_mod)/' /etc/mkinitcpio.conf
@@ -124,7 +127,7 @@ title		Arch Linux
 linux		/vmlinuz-linux
 initrd		/$UCODE.img
 initrd		/initramfs-linux.img
-options	cryptdevice=/dev/sda2:MyStorage:allow-discards root=/dev/mapper/MyStorage-rootvol
+options	cryptdevice=/dev/sda2:MyStorage:allow-discards root=/dev/mapper/MyStorage-rootvol CONFIG_LSM="landlock,lockdown,yama,integrity,apparmor,bpf"
 EOF
 
 # Secure mount points change fstab
