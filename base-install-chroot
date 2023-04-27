@@ -69,6 +69,22 @@ RouteMetric=20
 [IPv6AcceptRA]
 RouteMetric=20
 EOF
+# use secure dns with cloudflare then google
+# https://medium.com/@jawadalkassim/enable-dns-over-tls-in-linux-using-systemd-b03e44448c1c
+# check with https://1.1.1.1/help
+cat > /etc/systemd/resolved.conf << EOF
+[Resolve]
+DNS=1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001
+FallbackDNS=8.8.8.8 8.8.4.4
+Domains=~.
+#LLMNR=no
+#MulticastDNS=no
+DNSSEC=yes
+DNSOverTLS=yes
+#Cache=yes
+#DNSStubListener=yes
+#ReadEtcHosts=yes
+EOF
 systemctl enable systemd-resolved.service
 # wifi use iwd
 systemctl enable iwd.service
