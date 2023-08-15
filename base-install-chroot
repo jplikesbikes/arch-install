@@ -106,12 +106,20 @@ systemctl enable apparmor.service
 
 # swap 
 # https://haydenjames.io/linux-performance-almost-always-add-swap-space/
+# https://haydenjames.io/linux-performance-almost-always-add-swap-part2-zram/
+# use a small 8gb swap file
+# zswap is enabled by default https://wiki.archlinux.org/title/Zswap
+dd if=/dev/zero of=/swapfile bs=1M count=8k status=progress
+chmod 0600 /swapfile
+mkswap -U clear /swapfile
+swapon /swapfile
+cat >> /etc/fstab << EOF
+/swapfile none swap defaults 0 0
+EOF
+# check about tuning swappiness and vfs_cache_pressure with the above links
 # in /etc/sysctl.conf set
 # vm.swappiness=10
 # vm.vfs_cache_pressure=50
-# https://haydenjames.io/linux-performance-almost-always-add-swap-part2-zram/
-# probably use a small 4gb swap file and zram,
-# check about tuning swappiness and vfs_cache_pressure with the above
 
 # update MODULES=() to MODULES=(dm_mod)
 # update HOOKS=(...) to HOOKS=(... keyboard encrypt lvm2 filesystem ...)
