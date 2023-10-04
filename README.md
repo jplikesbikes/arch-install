@@ -53,6 +53,8 @@ Server=https://archive.archlinux.org/repos/2014/03/30/$repo/os/$arch
 Then update the database and force downgrade:
 # pacman -Syyuu
 ```
+## downgrade aur package
+https://github.com/actionless/pikaur#how-to-downgrade-a-package
 
 ### Mods for make package
 
